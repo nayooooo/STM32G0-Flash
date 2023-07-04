@@ -24,6 +24,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
+#include <stdio.h>
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -33,6 +35,20 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+
+#define LED_PORT					GPIOB
+#define LED_PIN						GPIO_PIN_0
+#define LED_ON_STATE				GPIO_PIN_RESET
+#define LED_OFF_STATE				GPIO_PIN_SET
+#define LED_ON()\
+			{\
+				HAL_GPIO_WritePin(LED_PORT, LED_PIN, LED_ON_STATE);\
+			}
+#define LED_OFF()\
+			{\
+				HAL_GPIO_WritePin(LED_PORT, LED_PIN, LED_OFF_STATE);\
+			}
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -43,6 +59,9 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+			
+static UART_HandleTypeDef* const serial = &huart2;
+static const uint32_t time_Out = 0XFFFFFF;
 
 /* USER CODE END PV */
 
@@ -94,6 +113,12 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  LED_ON();
+	  printf("LED: ON\r\n");
+	  HAL_Delay(500);
+	  LED_OFF();
+	  printf("LED: OFF\r\n");
+	  HAL_Delay(500);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
