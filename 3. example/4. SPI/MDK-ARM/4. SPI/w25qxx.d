@@ -1,4 +1,5 @@
-4.\ spi/main.o: ..\Core\Src\main.c ..\Core\Inc\main.h \
+4.\ spi/w25qxx.o: ..\Drivers\BSP\w25qxx\w25qxx.c \
+  ..\Drivers\BSP\w25qxx\w25qxx.h ..\Core\Inc\spi.h ..\Core\Inc\main.h \
   ..\Drivers\STM32G0xx_HAL_Driver\Inc\stm32g0xx_hal.h \
   ..\Core\Inc\stm32g0xx_hal_conf.h \
   ..\Drivers\STM32G0xx_HAL_Driver\Inc\stm32g0xx_hal_rcc.h \
@@ -34,7 +35,6 @@
   ..\Drivers\STM32G0xx_HAL_Driver\Inc\stm32g0xx_hal_spi_ex.h \
   ..\Drivers\STM32G0xx_HAL_Driver\Inc\stm32g0xx_hal_uart.h \
   ..\Drivers\STM32G0xx_HAL_Driver\Inc\stm32g0xx_hal_uart_ex.h \
-  ..\Core\Inc\spi.h ..\Core\Inc\usart.h ..\Core\Inc\gpio.h \
-  D:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdio.h \
-  ..\Drivers\BSP\w25qxx\w25qxx.h ..\Drivers\BSP\device\device.h \
-  D:\Keil_v5\ARM\ARMCLANG\Bin\..\include\string.h
+  ..\Drivers\BSP\device\device.h \
+  D:\Keil_v5\ARM\ARMCLANG\Bin\..\include\string.h \
+  D:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdio.h ..\Core\Inc\delay.h

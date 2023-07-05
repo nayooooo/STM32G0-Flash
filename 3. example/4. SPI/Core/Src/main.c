@@ -27,6 +27,8 @@
 
 #include <stdio.h>
 
+#include "w25qxx.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -105,6 +107,10 @@ int main(void)
   MX_SPI1_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
+  
+  W25QXX_Init();
+  hw_uint16_t id = W25QXX_ReadID();
+  printf("Flash id: 0X%X\r\n", id);
 
   /* USER CODE END 2 */
 

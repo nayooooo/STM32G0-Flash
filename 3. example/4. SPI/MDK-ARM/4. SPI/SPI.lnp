@@ -7,6 +7,7 @@
 "4. spi\stm32g0xx_it.o"
 "4. spi\stm32g0xx_hal_msp.o"
 "4. spi\print.o"
+"4. spi\delay.o"
 "4. spi\stm32g0xx_hal_spi.o"
 "4. spi\stm32g0xx_hal_spi_ex.o"
 "4. spi\stm32g0xx_hal_rcc.o"
@@ -28,6 +29,8 @@
 "4. spi\stm32g0xx_hal_uart.o"
 "4. spi\stm32g0xx_hal_uart_ex.o"
 "4. spi\system_stm32g0xx.o"
+"4. spi\device.o"
+"4. spi\w25qxx.o"
 --strict --scatter "4. SPI\SPI.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
