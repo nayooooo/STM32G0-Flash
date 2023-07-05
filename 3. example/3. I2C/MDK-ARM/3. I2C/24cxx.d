@@ -1,13 +1,14 @@
 3.\ i2c/24cxx.o: ..\Drivers\BSP\24cxx\24cxx.c \
-  ..\Drivers\BSP\24cxx\24cxx.h ..\Core\Inc\i2c.h ..\Core\Inc\main.h \
-  ..\Drivers\STM32G0xx_HAL_Driver\Inc\stm32g0xx_hal.h \
+  ..\Drivers\BSP\24cxx\24cxx.h ..\Drivers\BSP\device\device.h \
+  D:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdint.h \
+  D:\Keil_v5\ARM\ARMCLANG\Bin\..\include\string.h ..\Core\Inc\i2c.h \
+  ..\Core\Inc\main.h ..\Drivers\STM32G0xx_HAL_Driver\Inc\stm32g0xx_hal.h \
   ..\Core\Inc\stm32g0xx_hal_conf.h \
   ..\Drivers\STM32G0xx_HAL_Driver\Inc\stm32g0xx_hal_rcc.h \
   ..\Drivers\STM32G0xx_HAL_Driver\Inc\stm32g0xx_hal_def.h \
   ..\Drivers\CMSIS\Device\ST\STM32G0xx\Include\stm32g0xx.h \
   ..\Drivers\CMSIS\Device\ST\STM32G0xx\Include\stm32g030xx.h \
   ..\Drivers\CMSIS\Include\core_cm0plus.h \
-  D:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdint.h \
   ..\Drivers\CMSIS\Include\cmsis_version.h \
   ..\Drivers\CMSIS\Include\cmsis_compiler.h \
   ..\Drivers\CMSIS\Include\cmsis_armclang.h \

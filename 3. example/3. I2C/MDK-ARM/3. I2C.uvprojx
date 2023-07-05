@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32G030xx</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32G0xx_HAL_Driver/Inc;../Drivers/STM32G0xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32G0xx/Include;../Drivers/CMSIS/Include;../Drivers/BSP/24cxx</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32G0xx_HAL_Driver/Inc;../Drivers/STM32G0xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32G0xx/Include;../Drivers/CMSIS/Include;..\Drivers\BSP\device;../Drivers/BSP/24cxx</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -553,6 +553,11 @@
               <FileName>24cxx.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Drivers\BSP\24cxx\24cxx.c</FilePath>
+            </File>
+            <File>
+              <FileName>device.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\BSP\device\device.c</FilePath>
             </File>
           </Files>
         </Group>

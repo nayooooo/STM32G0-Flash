@@ -29,6 +29,7 @@
 "3. i2c\stm32g0xx_hal_uart_ex.o"
 "3. i2c\system_stm32g0xx.o"
 "3. i2c\24cxx.o"
+"3. i2c\device.o"
 --strict --scatter "3. I2C\I2C.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

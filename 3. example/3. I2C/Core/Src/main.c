@@ -66,7 +66,7 @@
 static UART_HandleTypeDef* const serial = &huart2;
 static const uint32_t time_Out = 0XFFFFFF;
 
-#define AT24CXX_LABLE_CHECK		('G')
+#define AT24CXX_LABLE_CHECK		('T')
 #define AT24CXX_LABLE_LEN		(28)
 static const uint8_t at24cxx_lable[AT24CXX_LABLE_LEN] = "Hello AT24CXX!\r\nLOVE YOU!\r\n";
 static const uint8_t at24cxx_lable_len = AT24CXX_LABLE_LEN - 1;
@@ -91,6 +91,9 @@ void SystemClock_Config(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+	
+	struct hw_device_24cxx at24c02;
+	const char *at24c02_name = "at24c02";
 
   /* USER CODE END 1 */
 
@@ -116,26 +119,29 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
   
-  HAL_Delay(1000);
-  AT24CXX_Init();
-  if (AT24CXX_Check()) {
+  while (HW_EOK != hw_device_at24cxx_register(&at24c02, at24c02_name, HW_NULL)) {
+	  printf("AT24C02 register failed!\r\n");
+	  HAL_Delay(1000);
+  }
+  at24c02.parent.init(&(at24c02.parent));
+  if (at24c02.parent.control(&(at24c02.parent), 1, "check")) {
 	  printf("AT24C02 error!\r\n");
   } else {
 	  printf("AT24C02 ok!\r\n");
 	  uint8_t data;
 	  uint8_t addr = EE_TYPE - 2;
-	  AT24CXX_Read(addr, &data, 1);
+	  at24c02.parent.read(&(at24c02.parent), addr, &data, 1);
 	  if (data != AT24CXX_LABLE_CHECK) {
 		  printf("AT24C02 start recording lable!\r\n");
 		  data = AT24CXX_LABLE_CHECK;
-		  AT24CXX_Write(addr, &data, 1);
+		  at24c02.parent.write(&(at24c02.parent), addr, &data, 1);
 		  HAL_Delay(5);
-		  AT24CXX_Write(0X00, (uint8_t*)at24cxx_lable, at24cxx_lable_len);
+		  at24c02.parent.write(&(at24c02.parent), 0X00, (uint8_t*)at24cxx_lable, at24cxx_lable_len);
 		  HAL_Delay(5);
 	  }
 	  printf("AT24C02 lable: \r\n");
 	  uint8_t rec_lable[AT24CXX_LABLE_LEN] = "";
-	  AT24CXX_Read(0X00, (uint8_t*)rec_lable, at24cxx_lable_len);
+	  at24c02.parent.read(&(at24c02.parent), 0X00, (uint8_t*)rec_lable, at24cxx_lable_len);
 	  printf("%s\r\n", rec_lable);
   }
 

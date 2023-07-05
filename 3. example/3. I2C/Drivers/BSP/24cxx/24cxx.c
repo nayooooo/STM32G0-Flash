@@ -1,26 +1,48 @@
 #include "24cxx.h"
 
-//////////////////////////////////////////////////////////////////////////////////	 
-//本程序只供学习使用，未经作者许可，不得用于其它任何用途
-//ALIENTEK精英STM32开发板
-//24CXX驱动 代码(适合24C01~24C16,24C32~256未经过测试!有待验证!)		   
-//正点原子@ALIENTEK
-//技术论坛:www.openedv.com
-//修改日期:2012/9/9
-//版本：V1.0
-//版权所有，盗版必究。
-//Copyright(C) 广州市星翼电子科技有限公司 2009-2019
-//All rights reserved									  
-//////////////////////////////////////////////////////////////////////////////////
-
 I2C_HandleTypeDef * dev_24cxx = &hi2c1;
 static const uint32_t time_Out = 0XFFFF;
 const uint8_t verify_Check_Byte = 0X55;
 
-//初始化IIC接口
-void AT24CXX_Init(void)
+hw_err_t hw_device_at24cxx_register(hw_device_24cxx_t dev, const char *name, void *user_data)
 {
-	;
+	if (dev == HW_NULL)
+		return -HW_ERROR;
+	
+	hw_device_register(&(dev->parent), name, HW_NULL);
+	hw_device_add_method(&(dev->parent), "init",	(void(*)(void))AT24CXX_Init);
+	hw_device_add_method(&(dev->parent), "open",	(void(*)(void))AT24CXX_Open);
+	hw_device_add_method(&(dev->parent), "close",	(void(*)(void))AT24CXX_Close);
+	hw_device_add_method(&(dev->parent), "read",	(void(*)(void))AT24CXX_Read);
+	hw_device_add_method(&(dev->parent), "write",	(void(*)(void))AT24CXX_Write);
+	hw_device_add_method(&(dev->parent), "control",	(void(*)(void))AT24CXX_Control);
+	
+	return HW_EOK;
+}
+
+hw_err_t AT24CXX_Init(hw_device_t dev)
+{
+	return HW_EOK;
+}
+
+hw_err_t AT24CXX_Open(hw_device_t dev, hw_uint16_t oflag)
+{
+	return HW_EOK;
+}
+
+hw_err_t AT24CXX_Close(hw_device_t dev)
+{
+	return HW_EOK;
+}
+
+hw_err_t AT24CXX_Control(hw_device_t dev, int cmd, void *args)
+{
+	if (cmd == 1) {
+		if (hw_strncmp((const char *)args, "check", 5) == 0) {
+			return AT24CXX_Check();
+		}
+	}
+	return HW_EOK;
 }
 
 void AT24CXX_ReadOneByte(uint16_t ReadAddr,uint8_t *DataToRead)
@@ -55,75 +77,83 @@ void AT24CXX_WritePage(uint16_t page,uint8_t *DataToWriteBuff)
 						time_Out);
 }
 
-void AT24CXX_Read(uint16_t ReadAddr,uint8_t *pBuffer,uint16_t NumToRead)
+hw_size_t AT24CXX_Read(hw_device_t dev, hw_off_t ops, void *buffer, hw_size_t size)
 {
-	if (NumToRead < EE_PAGE_SIZE) goto AT24CXX_READ_BY_BYTE;  // 待读出数据数目少于一页数据数目
-	if (NumToRead - ReadAddr % EE_PAGE_SIZE < EE_PAGE_SIZE) goto AT24CXX_READ_BY_BYTE;
+	hw_size_t __size = size;
+	
+	if (size < EE_PAGE_SIZE) goto AT24CXX_READ_BY_BYTE;  // 待读出数据数目少于一页数据数目
+	if (size - ops % EE_PAGE_SIZE < EE_PAGE_SIZE) goto AT24CXX_READ_BY_BYTE;
 	else goto AT24CXX_READ_BY_PAGE;
 	if (0) {
 	AT24CXX_READ_BY_BYTE:
-		while(NumToRead--)
+		while(size--)
 		{
-			AT24CXX_ReadOneByte(ReadAddr,pBuffer);
-			ReadAddr++;
-			pBuffer++;
+			AT24CXX_ReadOneByte(ops,buffer);
+			ops++;
+			buffer++;
 		}
 	}
 	if (0) {
 	AT24CXX_READ_BY_PAGE:
-		if (ReadAddr % EE_PAGE_SIZE) {
-			while (ReadAddr % EE_PAGE_SIZE) {
-				AT24CXX_ReadOneByte(ReadAddr,pBuffer);
-				ReadAddr++;
-				pBuffer++;
-				NumToRead--;
+		if (ops % EE_PAGE_SIZE) {
+			while (ops % EE_PAGE_SIZE) {
+				AT24CXX_ReadOneByte(ops,buffer);
+				ops++;
+				buffer++;
+				size--;
 			}
 		}
-		while (NumToRead >= EE_PAGE_SIZE) {
-			uint16_t page = ReadAddr / EE_PAGE_SIZE;
-			AT24CXX_ReadPage(page,pBuffer);
-			ReadAddr += EE_PAGE_SIZE;
-			pBuffer += EE_PAGE_SIZE;
-			NumToRead -= EE_PAGE_SIZE;
+		while (size >= EE_PAGE_SIZE) {
+			uint16_t page = ops / EE_PAGE_SIZE;
+			AT24CXX_ReadPage(page,buffer);
+			ops += EE_PAGE_SIZE;
+			buffer += EE_PAGE_SIZE;
+			size -= EE_PAGE_SIZE;
 		}
 		goto AT24CXX_READ_BY_BYTE;
 	}
+	
+	return __size;
 }
 
-void AT24CXX_Write(uint16_t WriteAddr,uint8_t *pBuffer,uint16_t NumToWrite)
+hw_size_t AT24CXX_Write(hw_device_t dev, hw_off_t ops, const void *buffer, hw_size_t size)
 {
-	if (NumToWrite < EE_PAGE_SIZE) goto AT24CXX_WRITE_BY_BYTE;  // 待写入数据数目少于一页数据数目
-	if (NumToWrite - WriteAddr % EE_PAGE_SIZE < EE_PAGE_SIZE) goto AT24CXX_WRITE_BY_BYTE;
+	hw_size_t __size = size;
+	
+	if (size < EE_PAGE_SIZE) goto AT24CXX_WRITE_BY_BYTE;  // 待写入数据数目少于一页数据数目
+	if (size - ops % EE_PAGE_SIZE < EE_PAGE_SIZE) goto AT24CXX_WRITE_BY_BYTE;
 	else goto AT24CXX_WRITE_BY_PAGE;
 	if (0) {
 	AT24CXX_WRITE_BY_BYTE:
-		while(NumToWrite--)
+		while(size--)
 		{
-			AT24CXX_WriteOneByte(WriteAddr,pBuffer);
+			AT24CXX_WriteOneByte(ops,(uint8_t*)buffer);
 			HAL_Delay(5);
-			WriteAddr++;
-			pBuffer++;
+			ops++;
+			buffer++;
 		}
 	}
 	if (0) {
 	AT24CXX_WRITE_BY_PAGE:
-		if (WriteAddr % EE_PAGE_SIZE) {
-			AT24CXX_WriteOneByte(WriteAddr,pBuffer);
+		if (ops % EE_PAGE_SIZE) {
+			AT24CXX_WriteOneByte(ops,(uint8_t*)buffer);
 			HAL_Delay(5);
-			WriteAddr++;
-			pBuffer++;
-			NumToWrite--;
+			ops++;
+			buffer++;
+			size--;
 		}
-		while (NumToWrite >= EE_PAGE_SIZE) {
-			uint16_t page = WriteAddr / EE_PAGE_SIZE;
-			AT24CXX_WritePage(page,pBuffer);
+		while (size >= EE_PAGE_SIZE) {
+			uint16_t page = ops / EE_PAGE_SIZE;
+			AT24CXX_WritePage(page,(uint8_t*)buffer);
 			HAL_Delay(5);
-			WriteAddr += EE_PAGE_SIZE;
-			pBuffer += EE_PAGE_SIZE;
-			NumToWrite -= EE_PAGE_SIZE;
+			ops += EE_PAGE_SIZE;
+			buffer += EE_PAGE_SIZE;
+			size -= EE_PAGE_SIZE;
 		}
 		goto AT24CXX_WRITE_BY_BYTE;
 	}
+	
+	return __size;
 }
 
 uint8_t AT24CXX_Check(void)
