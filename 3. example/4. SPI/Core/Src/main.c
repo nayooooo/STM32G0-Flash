@@ -26,6 +26,9 @@
 /* USER CODE BEGIN Includes */
 
 #include <stdio.h>
+#include <string.h>
+
+#include "delay.h"
 
 #include "w25qxx.h"
 
@@ -108,9 +111,28 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
   
+  delay_init(64);
+  
   W25QXX_Init();
   hw_uint16_t id = W25QXX_ReadID();
   printf("Flash id: 0X%X\r\n", id);
+  if (id == W25Q64) printf("is W25Q64.\r\n");
+  else printf("not W25Q64!\r\n");
+  uint8_t buff[256] = { 0 };
+  for (int i = 0; i < 256; i++) {
+	  buff[i] = i;
+  }
+  W25QXX_Write(buff, 0X000000, 256);
+  printf("Flash write OK!\r\n");
+  memset(buff, 0X00, 256);
+  W25QXX_Read(buff, 0X000000, 256);
+  printf("Flash read OK!\r\n");
+  for (int i = 0; i < 32; i++) {
+	  for (int j = 0; j < 8; j++) {
+		printf("%X\t", buff[i * 32 + j]);
+	  }
+	  printf("\r\n");
+  }
 
   /* USER CODE END 2 */
 

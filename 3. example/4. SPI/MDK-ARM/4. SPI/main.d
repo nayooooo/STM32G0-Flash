@@ -36,5 +36,5 @@
   ..\Drivers\STM32G0xx_HAL_Driver\Inc\stm32g0xx_hal_uart_ex.h \
   ..\Core\Inc\spi.h ..\Core\Inc\usart.h ..\Core\Inc\gpio.h \
   D:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdio.h \
-  ..\Drivers\BSP\w25qxx\w25qxx.h ..\Drivers\BSP\device\device.h \
-  D:\Keil_v5\ARM\ARMCLANG\Bin\..\include\string.h
+  D:\Keil_v5\ARM\ARMCLANG\Bin\..\include\string.h ..\Core\Inc\delay.h \
+  ..\Drivers\BSP\w25qxx\w25qxx.h ..\Drivers\BSP\device\device.h

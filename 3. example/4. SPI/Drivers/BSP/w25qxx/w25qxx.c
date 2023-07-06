@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include "delay.h"
 
-hw_uint16_t W25QXX_TYPE=W25Q64;	// 默认是W25Q64
+hw_uint16_t W25QXX_TYPE = W25Q64;	// 默认是W25Q64
 SPI_HandleTypeDef *dev_w25qxx = &hspi1;
 static const uint32_t time_Out = 0XFFFF;
 
@@ -255,7 +255,7 @@ void W25QXX_Erase_Sector(hw_uint32_t Dst_Addr)
 // 等待空闲
 void W25QXX_Wait_Busy(void)
 {
-	while((W25QXX_ReadSR()&0x01) == 0x01);  		// 等待BUSY位清空
+	while((W25QXX_ReadSR()&0x01) == 0x01) HAL_Delay(5);  		// 等待BUSY位清空
 }
 
 // 进入掉电模式
