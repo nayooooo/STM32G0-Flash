@@ -12,7 +12,8 @@ static const uint32_t time_Out = 0XFFFF;
 // 容量为8M字节,共有128个Block,4096个Sector 
 
 void W25QXX_Init(void)
-{	
+{
+	W25QXX_CS_NENA();
 	W25QXX_TYPE = W25QXX_ReadID();  // 读取FLASH ID.
 }
 
@@ -37,8 +38,10 @@ static void W25QXX_WriteOneByte(const hw_uint8_t *data)
 hw_uint8_t W25QXX_ReadSR(void)   
 {
 	hw_uint8_t byte = W25X_ReadStatusReg;
+	W25QXX_CS_ENA();
 	W25QXX_WriteOneByte(&byte);  // 发送读取状态寄存器命令
 	W25QXX_ReadOneByte(&byte);  // 读取一个字节
+	W25QXX_CS_NENA();
 	return byte;
 }
 
@@ -47,8 +50,10 @@ hw_uint8_t W25QXX_ReadSR(void)
 void W25QXX_Write_SR(hw_uint8_t sr)
 {
 	hw_uint8_t byte = W25X_ReadStatusReg;
+	W25QXX_CS_ENA();
 	W25QXX_WriteOneByte(&byte);  // 发送读取状态寄存器命令
 	W25QXX_WriteOneByte(&sr);    // 写入一个字节
+	W25QXX_CS_NENA();
 }
 
 // W25QXX写使能
@@ -56,7 +61,9 @@ void W25QXX_Write_SR(hw_uint8_t sr)
 void W25QXX_Write_Enable(void)
 {
 	hw_uint8_t byte = W25X_WriteEnable;
+	W25QXX_CS_ENA();
 	W25QXX_WriteOneByte(&byte);  // 发送写使能
+	W25QXX_CS_NENA();
 }
 
 // W25QXX写禁止	
@@ -64,7 +71,9 @@ void W25QXX_Write_Enable(void)
 void W25QXX_Write_Disable(void)   
 {
 	hw_uint8_t byte = W25X_WriteDisable;
+	W25QXX_CS_ENA();
 	W25QXX_WriteOneByte(&byte);  // 发送写禁止指令
+	W25QXX_CS_NENA();
 }
 
 // 读取芯片ID
@@ -78,6 +87,7 @@ hw_uint16_t W25QXX_ReadID(void)
 {
 	hw_uint16_t Temp = 0;
 	hw_uint8_t byte = W25X_ManufactDeviceID;
+	W25QXX_CS_ENA();
 	W25QXX_WriteOneByte(&byte);  // 发送读取ID命令
 	byte = 0X00;
 	W25QXX_WriteOneByte(&byte);
@@ -87,6 +97,7 @@ hw_uint16_t W25QXX_ReadID(void)
 	Temp |= byte<<8;
 	W25QXX_ReadOneByte(&byte);
 	Temp |= byte;
+	W25QXX_CS_NENA();
 	return Temp;
 }
 
@@ -99,6 +110,7 @@ void W25QXX_Read(hw_uint8_t* pBuffer,hw_uint32_t ReadAddr,hw_uint16_t NumByteToR
 {
  	hw_uint16_t i;
 	hw_uint8_t byte = W25X_ReadData;
+	W25QXX_CS_ENA();
 	W25QXX_WriteOneByte(&byte);							// 发送读取命令
 	byte = (hw_uint8_t)((ReadAddr)>>16);				// 发送24bit地址
 	W25QXX_WriteOneByte(&byte);
@@ -110,6 +122,7 @@ void W25QXX_Read(hw_uint8_t* pBuffer,hw_uint32_t ReadAddr,hw_uint16_t NumByteToR
 	{
 		W25QXX_ReadOneByte(&pBuffer[i]);  // 循环读数
     }
+	W25QXX_CS_NENA();
 }
 
 // SPI在一页(0~65535)内写入少于256个字节的数据
@@ -121,6 +134,7 @@ void W25QXX_Write_Page(hw_uint8_t* pBuffer,hw_uint32_t WriteAddr,hw_uint16_t Num
 {
  	hw_uint16_t i;
     W25QXX_Write_Enable();                  	// SET WEL
+	W25QXX_CS_ENA();
 	hw_uint8_t byte = W25X_PageProgram;
 	W25QXX_WriteOneByte(&byte);      	// 发送写页命令
 	byte = (hw_uint8_t)((WriteAddr)>>16);				// 发送24bit地址
@@ -133,6 +147,7 @@ void W25QXX_Write_Page(hw_uint8_t* pBuffer,hw_uint32_t WriteAddr,hw_uint16_t Num
 	{
 		W25QXX_WriteOneByte(&pBuffer[i]);  // 循环写数
 	}
+	W25QXX_CS_NENA();
 	W25QXX_Wait_Busy();					   		// 等待写入结束
 }
 
@@ -227,7 +242,9 @@ void W25QXX_Erase_Chip(void)
     W25QXX_Write_Enable();                 	 	// SET WEL
     W25QXX_Wait_Busy();
 	hw_uint8_t byte = W25X_ChipErase;
+	W25QXX_CS_ENA();
 	W25QXX_WriteOneByte(&byte);					// 发送片擦除命令
+	W25QXX_CS_NENA();
 	W25QXX_Wait_Busy();   				   		// 等待芯片擦除结束
 }
 
@@ -242,6 +259,7 @@ void W25QXX_Erase_Sector(hw_uint32_t Dst_Addr)
     W25QXX_Write_Enable();                  	// SET WEL
     W25QXX_Wait_Busy();
 	hw_uint8_t byte = W25X_SectorErase;
+	W25QXX_CS_ENA();
 	W25QXX_WriteOneByte(&byte);					// 发送扇区擦除指令
 	byte = (hw_uint8_t)((Dst_Addr)>>16);		// 发送24bit地址
 	W25QXX_WriteOneByte(&byte);
@@ -249,6 +267,7 @@ void W25QXX_Erase_Sector(hw_uint32_t Dst_Addr)
 	W25QXX_WriteOneByte(&byte);
 	byte = (hw_uint8_t)Dst_Addr;
 	W25QXX_WriteOneByte(&byte);
+	W25QXX_CS_NENA();
     W25QXX_Wait_Busy();   				   		// 等待擦除完成
 }
 
@@ -262,7 +281,9 @@ void W25QXX_Wait_Busy(void)
 void W25QXX_PowerDown(void)
 {
 	hw_uint8_t byte = W25X_PowerDown;
+	W25QXX_CS_ENA();
 	W25QXX_WriteOneByte(&byte);					//发送掉电命令
+	W25QXX_CS_NENA();
     delay_us(3);								//等待TPD
 }
 
@@ -270,7 +291,9 @@ void W25QXX_PowerDown(void)
 void W25QXX_WAKEUP(void)
 {
 	hw_uint8_t byte = W25X_ReleasePowerDown;
+	W25QXX_CS_ENA();
 	W25QXX_WriteOneByte(&byte);					//  send W25X_PowerDown command 0xAB
+	W25QXX_CS_NENA();
     delay_us(3);                            	//等待TRES1
 }
 

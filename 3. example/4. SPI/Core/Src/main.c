@@ -55,6 +55,11 @@
 				HAL_GPIO_WritePin(LED_PORT, LED_PIN, LED_OFF_STATE);\
 			}
 
+#define BUFF_SIZE			(15)
+#define BUFF_ADDR			(0X000000)
+#define FLAG_ADDR			(0X000100)
+#define FLAG_CHAR			('A')
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -65,6 +70,8 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+
+static const hw_uint8_t buff[BUFF_SIZE] = "Hello W25QXX!\r\n";
 
 /* USER CODE END PV */
 
@@ -118,21 +125,20 @@ int main(void)
   printf("Flash id: 0X%X\r\n", id);
   if (id == W25Q64) printf("is W25Q64.\r\n");
   else printf("not W25Q64!\r\n");
-  uint8_t buff[256] = { 0 };
-  for (int i = 0; i < 256; i++) {
-	  buff[i] = i;
+  
+  hw_uint8_t flag = '\0';
+  W25QXX_Read(&flag, FLAG_ADDR, 1);
+  if (flag != FLAG_CHAR) {
+	  printf("Flash remaking...\r\n");
+	  W25QXX_Write((hw_uint8_t*)buff, BUFF_ADDR, BUFF_SIZE);
+	  flag = FLAG_CHAR;
+	  W25QXX_Write(&flag, FLAG_ADDR, 1);
+	  printf("Flash remake OK!\r\n");
   }
-  W25QXX_Write(buff, 0X000000, 256);
-  printf("Flash write OK!\r\n");
-  memset(buff, 0X00, 256);
-  W25QXX_Read(buff, 0X000000, 256);
-  printf("Flash read OK!\r\n");
-  for (int i = 0; i < 32; i++) {
-	  for (int j = 0; j < 8; j++) {
-		printf("%X\t", buff[i * 32 + j]);
-	  }
-	  printf("\r\n");
-  }
+  printf("Flash check infor: \r\n");
+  hw_uint8_t rx_buff[BUFF_SIZE] = { 0 };
+  W25QXX_Read(rx_buff, BUFF_ADDR, BUFF_SIZE);
+  printf("%s", rx_buff);
 
   /* USER CODE END 2 */
 

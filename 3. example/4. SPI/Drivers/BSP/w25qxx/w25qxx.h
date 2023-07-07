@@ -24,13 +24,11 @@
 
 extern hw_uint16_t W25QXX_TYPE;					//定义W25QXX芯片型号		   
 
-#define	W25QXX_CS 		PBout(12)  		//W25QXX的片选信号
+#include "stm32g0xx_hal_gpio.h"
+#define W25QXX_CS_ENA()			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, 0)
+#define W25QXX_CS_NENA()		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, 1)
 				 
 ////////////////////////////////////////////////////////////////////////////
-
-//片选使能
-#define W25QXX_CS_ENA 0
-#define W25QXX_CS_NENA 1
 
 //指令表
 #define W25X_WriteEnable		0x06
